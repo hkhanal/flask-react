@@ -71,4 +71,23 @@ def get_data():
     result = {"name": name, "age": age}
     return jsonify(result)
 
+excel_data = pd.read_excel('path_to_your_excel_file.xlsx')
+
+@app.route('/get_excel_data', methods=['GET'])
+def get_excel_data():
+    return excel_data.to_json(orient='records')
+
+@app.route('/update_cell', methods=['POST'])
+def update_cell():
+    data = request.json
+    row_index = data['rowIndex']
+    column_name = data['columnName']
+    new_value = data['newValue']
+    
+    excel_data.at[row_index, column_name] = new_value
+    excel_data.to_excel('path_to_your_excel_file.xlsx', index=False)  # Save the updated data
+    
+    return jsonify({'message': 'Cell updated successfully'})
+
+
 
