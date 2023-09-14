@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function ChangeColumns() {
+import './App.css'; // Import your CSS stylesheet
+
+function App() {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [editedItemId, setEditedItemId] = useState(null); // Track the edited item
   const perPage = 5; // Number of items per page
 
   useEffect(() => {
@@ -30,6 +33,7 @@ function ChangeColumns() {
     if (index !== -1) {
       updatedItems[index] = item;
       setItems(updatedItems);
+      setEditedItemId(item.id); // Set the edited item's ID
 
       // Send updated data to Flask backend
       axios.put('/api/items', updatedItems)
@@ -51,7 +55,7 @@ function ChangeColumns() {
   return (
     <div className="App">
       <table>
-        <thead>
+      <thead>
           <tr>
             <th>ID</th>
             <th>Name</th>
@@ -62,6 +66,7 @@ function ChangeColumns() {
             <tr key={item.id}>
               <td>{item.id}</td>
               <td
+                className={editedItemId === item.id ? 'edited' : ''}
                 contentEditable={true}
                 onBlur={(e) => handleEdit({ ...item, name: e.target.innerText })}
               >
@@ -80,4 +85,4 @@ function ChangeColumns() {
   );
 }
 
-export default ChangeColumns;
+export default App;
