@@ -91,3 +91,32 @@ def update_cell():
 
 
 
+# Sample data as a DataFrame
+data = pd.DataFrame({
+    "id": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # Sample data with more entries
+    "name": ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7", "Item 8", "Item 9", "Item 10"]
+})
+
+@app.route("/api/items", methods=["GET", "PUT"])
+def items():
+    if request.method == "GET":
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 5))
+
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+
+        paginated_data = data.iloc[start_idx:end_idx].to_dict(orient="records")
+        total_items = len(data)
+
+        return jsonify({
+            "data": paginated_data,
+            "total_items": total_items
+        })
+    elif request.method == "PUT":
+        updated_data = request.json
+        updated_df = pd.DataFrame(updated_data)
+        data.update(updated_df)
+        data.to_csv("data.csv", index=False)  # Save to CSV file
+        return jsonify({"message": "Data updated and saved successfully"})
+
